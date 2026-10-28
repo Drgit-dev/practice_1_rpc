@@ -7,13 +7,9 @@ with `rpc.call(...)` calls.
 
 from __future__ import annotations
 
-import socket
-
-from common.protocol import send_json, recv_json
-
 from client.rpc_client import RPCClient, RPCError
 
-HOST = "44.202.77.94"  # Replace with the EC2 IP/DNS when deploying
+HOST = "44.202.77.94"  
 PORT = 5000
 
 
