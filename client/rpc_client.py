@@ -1,20 +1,4 @@
-"""Skeleton of the RPC client layer.
-
-This class must hide from the application:
-- message creation
-- serialization
-- TCP connection
-- sending and receiving
-- error handling
-"""
-
-from __future__ import annotations
-
-import socket
-from typing import Any
-
-from common.protocol import send_json, recv_json
-
+"""RPC client layer."""
 
 from __future__ import annotations
 
@@ -26,6 +10,7 @@ from common.protocol import send_json, recv_json
 
 class RPCError(Exception):
     """Raised when the server returns an error response."""
+
     def __init__(self, error_code: str, message: str = ""):
         self.error_code = error_code
         super().__init__(f"{error_code}: {message}" if message else error_code)
