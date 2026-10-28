@@ -34,11 +34,23 @@ class ProtocolTests(unittest.TestCase):
 
 
 class StudentTests(unittest.TestCase):
-    @unittest.skip("Enable once RPCClient and RPCServer are implemented.")
-    def test_rpc_add(self):
-        # TODO (student):
-        # Add an integration or dispatch test.
-        self.fail("Pending")
+    def setUp(self):
+        self.rpc = RPCServer()
+        self.rpc.register("add", lambda a, b: a + b)
+
+    def test_rpc_add_ok(self):
+        resp = self.rpc.dispatch({"function": "add", "args": [4, 7]})
+        self.assertEqual(resp, {"status": "ok", "result": 11})
+
+    def test_rpc_not_found(self):
+        resp = self.rpc.dispatch({"function": "nope", "args": []})
+        self.assertEqual(resp["status"], "error")
+        self.assertEqual(resp["error"], "PROCEDURE_NOT_FOUND")
+
+    def test_rpc_invalid_args(self):
+        resp = self.rpc.dispatch({"function": "add", "args": [1]})
+        self.assertEqual(resp["status"], "error")
+        self.assertEqual(resp["error"], "INVALID_ARGUMENTS")
 
 
 if __name__ == "__main__":
