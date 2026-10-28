@@ -11,31 +11,32 @@ import socket
 
 from common.protocol import send_json, recv_json
 
-HOST = "127.0.0.1"  # Replace with the EC2 IP/DNS when deploying
+from client.rpc_client import RPCClient, RPCError
+
+HOST = "44.202.77.94"  # Replace with the EC2 IP/DNS when deploying
 PORT = 5000
 
 
 def main():
-    request = {
-        "function": "add",
-        "args": [4, 7],
-    }
+    rpc = RPCClient(HOST, PORT, timeout=10.0)
 
-    print("Sending:", request)
+    print("add(4, 7) =", rpc.call("add", 4, 7))
+    print("multiply(3, 5) =", rpc.call("multiply", 3, 5))
+    print("power(2, 8) =", rpc.call("power", 2, 8))
+    print("slow_task(2) =", rpc.call("slow_task", 2))
+    print("reverse_string('hello') =", rpc.call("reverse_string", "hello"))
+    print("get_server_time() =", rpc.call("get_server_time"))
 
-    with socket.create_connection((HOST, PORT), timeout=5) as sock:
-        send_json(sock, request)
-        response = recv_json(sock)
+    # Error cases
+    try:
+        rpc.call("nonexistent", 1)
+    except RPCError as e:
+        print(f"Expected error: {e}")
 
-    print("Response:", response)
-
-    # Once RPCClient is complete:
-    #
-    # from client.rpc_client import RPCClient
-    # rpc = RPCClient(HOST, PORT)
-    # print(rpc.call("add", 4, 7))
-    # print(rpc.call("multiply", 3, 5))
-    # print(rpc.call("slow_task", 2))
+    try:
+        rpc.call("add", 1)  # missing argument
+    except RPCError as e:
+        print(f"Expected error: {e}")
 
 
 if __name__ == "__main__":
